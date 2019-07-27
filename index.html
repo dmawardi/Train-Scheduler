@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Train Scheduler</title>
 
-    
+
 
     <!-- Jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -31,6 +31,58 @@
 </head>
 
 <body>
+    <div class="container">
+        <div class="jumbotron jumbotron">
+            <div class="container">
+                <h1 class="display-4">Anytime is Train Time</h1>
+                <p class="lead">Choo Choo. Chee Chee
+                </p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                Train Schedule
+            </div>
+            <table class="table text-center">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Train Name</th>
+                        <th scope="col">Destination</th>
+                        <th scope="col">Frequency</th>
+                        <th scope="col">Next Arrival</th>
+                        <th scope="col">Minutes Away</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody id="tableData">
+                </tbody>
+            </table>
+        </div>
+        <div class="card" id="submissionForm">
+            <div class="card-header">
+                Add Train
+            </div>
+            <form>
+                <div class="form-group">
+                    <label for="nameInput">Train Name</label>
+                    <input type="text" class="form-control" id="trainNameInput" placeholder="Your Name">
+                    <label for="roleInput">Destination</label>
+                    <input type="text" class="form-control" id="destinationInput" placeholder="Your Role">
+                    <label for="dateInput">First Train of the Day Time (HH:MM - (Military Time))</label>
+                    <input type="date" class="form-control" id="firstTrainTimeInput" placeholder="MM/DD/YYYY">
+                    <label for="rateInput">Frequency (minutes)</label>
+                    <input type="number" class="form-control" id="frequencyInput" placeholder="Monthly Rate">
+                </div>
+                <button type="button" class="btn btn-primary" id="submitButton">Submit</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
 
     <!-- Firebase initialize -->
     <script>
