@@ -13,8 +13,10 @@ var firstTrainTimeInput = $('#firstTrainTimeInput');
 var frequencyInput = $('#frequencyInput');
 
 
-// Takes user input then displays on board & pushes to 
-function renderRow(snap){
+// TODO: Build function to calculate/returns next arrival & mins away based on frequency and first train time 
+
+// Takes object of JSON from snap then displays in table as row
+function renderRow(snap) {
     console.log(snap.val());
     var table = $('#tableData');
     var row = $('<tr>');
@@ -33,7 +35,7 @@ function renderRow(snap){
     buttonTD.append(delButton);
 
     // Calculations for calculated columns
-    
+
 
     // variable declaration using snapshot values
     var trainNameTD = "<td>" + snap.val().trainNames + "</td>";
@@ -50,10 +52,11 @@ function renderRow(snap){
     row.append(buttonTD);
     // Append row to table
     table.append(row);
-    
+
 }
 
-$('#submitButton').on('click', function(event){
+// Event handler for click event of input submission form
+$('#submitButton').on('click', function (event) {
     // Prevent default submission behaviour
     event.preventDefault();
 
@@ -82,7 +85,7 @@ $('#submitButton').on('click', function(event){
 
 })
 
-// Click event for delete button
+// Event handler for delete button
 $(document.body).on('click', '#delButton', function () {
     var recordID = $(this).attr('data-delete');
     console.log("Record ID: " + recordID);
@@ -93,16 +96,18 @@ $(document.body).on('click', '#delButton', function () {
 
 });
 
+
+// Firebase update events
 // WHen a child is added to the Firebase database
-database.on('child_added', function(snap){
+database.on('child_added', function (snap) {
     console.log(snap.val());
 
     if (snap.val() != null) {
         renderRow(snap);
     }
 
-}, function(error) {
-    console.log('error encountered: '+error.code);
+}, function (error) {
+    console.log('error encountered: ' + error.code);
 })
 
 // When a child is removed from the database
@@ -112,8 +117,9 @@ database.on('child_removed', function (snap) {
     console.log(recordID);
 
     // Use the recordID to select the element with JQuery
-    $('#'+recordID).remove();
+    $('#' + recordID).remove();
 
 }, function (error) {
+    console.log('error encountered: ' + error.code);
 
 })
