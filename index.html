@@ -31,6 +31,7 @@
 </head>
 
 <body>
+    <!-- Title -->
     <div class="container">
         <div class="jumbotron jumbotron">
             <div class="container">
@@ -39,6 +40,8 @@
                 </p>
             </div>
         </div>
+
+        <!-- Train Schedule Table -->
         <div class="card">
             <div class="card-header">
                 Train Schedule
@@ -58,20 +61,23 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Submission form section -->
         <div class="card" id="submissionForm">
             <div class="card-header">
                 Add Train
             </div>
             <form>
                 <div class="form-group">
-                    <label for="nameInput">Train Name</label>
-                    <input type="text" class="form-control" id="trainNameInput" placeholder="Your Name">
-                    <label for="roleInput">Destination</label>
-                    <input type="text" class="form-control" id="destinationInput" placeholder="Your Role">
-                    <label for="dateInput">First Train of the Day Time (HH:MM - (Military Time))</label>
-                    <input type="date" class="form-control" id="firstTrainTimeInput" placeholder="MM/DD/YYYY">
-                    <label for="rateInput">Frequency (minutes)</label>
-                    <input type="number" class="form-control" id="frequencyInput" placeholder="Monthly Rate">
+                    <label for="trainNameInput">Train Name</label>
+                    <input type="text" class="form-control" id="trainNameInput" placeholder="Name of Train Service">
+                    <label for="destinationInput">Destination</label>
+                    <input type="text" class="form-control" id="destinationInput" placeholder="Destination">
+                    <label for="firstTrainTimeInput">First Train of the Day Time (HH:MM - (Military Time))</label>
+                    <input type="text" class="form-control" id="firstTrainTimeInput" placeholder="HH:MM">
+                    <label for="frequencyInput">Frequency (minutes)</label>
+                    <input type="number" class="form-control" id="frequencyInput"
+                        placeholder="Minute interval between train arrivals">
                 </div>
                 <button type="button" class="btn btn-primary" id="submitButton">Submit</button>
 
@@ -81,24 +87,24 @@
 
     </div>
 
-
-
-
     <!-- Firebase initialize -->
     <script>
         // Your web app's Firebase configuration
         var firebaseConfig = {
-            apiKey: "AIzaSyDjxqNZ5VP3nEUFVyVJZw69EASezB6-lII",
-            authDomain: "monash-testing.firebaseapp.com",
-            databaseURL: "https://monash-testing.firebaseio.com",
-            projectId: "monash-testing",
+            apiKey: "AIzaSyCGFr1J2k3dRvWg4DjCMgGiEYYs6rAvpjE",
+            authDomain: "train-scheduler-e49db.firebaseapp.com",
+            databaseURL: "https://train-scheduler-e49db.firebaseio.com",
+            projectId: "train-scheduler-e49db",
             storageBucket: "",
-            messagingSenderId: "668631085807",
-            appId: "1:668631085807:web:3eab724ea347ba5b"
+            messagingSenderId: "424436001615",
+            appId: "1:424436001615:web:a524bb03b786cb43"
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
     </script>
+    <!-- Moment JS -->
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+    <!-- Application JS -->
     <script type="text/javascript" src="assets/javascript/app.js"></script>
 </body>
 
