@@ -1,5 +1,5 @@
 // Assign firebase database to variable
-var database = firebase.database().ref('/Train-Schedules');
+var database = firebase.database();
 
 // var trainNames = [];
 // var destinationList = [];
@@ -11,6 +11,7 @@ var trainNameInput = $('#trainNameInput');
 var destinationInput = $('#destinationInput');
 var firstTrainTimeInput = $('#firstTrainTimeInput');
 var frequencyInput = $('#frequencyInput');
+var submitButton = $('#submitButton');
 
 
 // Function to calculate/returns next arrival & mins away based on frequency and first train time 
@@ -23,10 +24,6 @@ function calcNextAndMinsAway(firstTrain, frequency) {
     var minsAway;
     var nextArrival;
 
-    console.log('Current time: '+ moment(currentTime).format('HH:mm'));
-    console.log('First Train Time: '+ moment(firstTrainTime).format('HH:mm'));
-    console.log('Time difference: ' + timeDiff);
-
     // Calculate mins away from next train
     minsAway = frequency - (timeDiff % frequency)
     // Add minsAway to current time for next arrival and format as HH:mm
@@ -36,7 +33,6 @@ function calcNextAndMinsAway(firstTrain, frequency) {
 
 // Takes object of JSON from snap then displays in table as row
 function renderRow(snap) {
-    console.log(snap.val());
     var table = $('#tableData');
     var row = $('<tr>');
 
@@ -54,7 +50,7 @@ function renderRow(snap) {
     delButton.attr('data-delete', snap.ref.key);
     delButton.attr('id', 'delButton');
     delButton.text('X');
-    
+
 
     // Create update button and set in a <td> object
     var editButton = $('<button>');
@@ -70,7 +66,7 @@ function renderRow(snap) {
     buttonTD.append(editButton);
 
     // Calculations for calculated columns
-    [nextArrival, minsAway]  =  calcNextAndMinsAway(snap.val().firstTrainTimes, snap.val().frequency)
+    [nextArrival, minsAway] = calcNextAndMinsAway(snap.val().firstTrainTimes, snap.val().frequency)
 
     // variable declaration using snapshot values
     var trainNameTD = "<td>" + snap.val().trainNames + "</td>";
@@ -96,22 +92,38 @@ $('#submitButton').on('click', function (event) {
     // Prevent default submission behaviour
     event.preventDefault();
 
+    var buttonState = $(this).attr('data-state');
+    var recordID = $(this).attr('data-idToEdit');
+
     var convertedDate = moment(firstTrainTimeInput.val(), "HH:mm");
     // moment.unix(convertedDate);
 
-    // console.log(trainNameInput.val());
-    // console.log(destinationInput.val());
-    // console.log(firstTrainTimeInput.val());
-    // console.log(frequencyInput.val());
-    console.log(moment.unix(convertedDate));
+    if (buttonState == 'submit') {
+        // Push object to the database
+        database.ref('/Train-Schedules').push({
+            trainNames: trainNameInput.val(),
+            destination: destinationInput.val(),
+            firstTrainTimes: moment(convertedDate).format('HH:mm'),
+            frequency: frequencyInput.val()
+        });
 
-    // Push object to the database
-    database.push({
-        trainNames: trainNameInput.val(),
-        destination: destinationInput.val(),
-        firstTrainTimes: moment(convertedDate).format('HH:mm'),
-        frequency: frequencyInput.val()
-    });
+    } else if (buttonState == 'update') {
+        var ref = database.ref('/Train-Schedules');
+
+        // Grab values from database using record ID and edit
+        ref.child('/' + recordID).set({
+            trainNames: trainNameInput.val(),
+            destination: destinationInput.val(),
+            firstTrainTimes: moment(convertedDate).format('HH:mm'),
+            frequency: frequencyInput.val()
+        });
+        // The above will trigger the render row function for the new data
+
+        submitButton.text('Submit');
+
+    }
+
+
 
     trainNameInput.val('');
     destinationInput.val('');
@@ -127,27 +139,42 @@ $(document.body).on('click', '#delButton', function () {
     console.log("Record ID: " + recordID);
 
     // Remove record with row's record ID
-    database.child(recordID).remove();
+    database.ref('/Train-Schedules').child(recordID).remove();
     // The above removal triggers the on "child removed" event
 
 });
 
 $(document.body).on('click', '#editButton', function () {
     var recordID = $(this).attr('data-edit');
+    var ref = database.ref('/Train-Schedules');
     console.log("Record ID: " + recordID);
 
-    // Remove record with row's record ID
-    // database.child(recordID).set({
 
-    // });
-    // The above removal triggers the on "child removed" event
+    // Grab values from database using record ID
+    ref.child('/' + recordID).once('value', function (snap) {
+        console.log(snap.val());
+
+        // Set form input to values
+        trainNameInput.val(snap.val().trainNames);
+        destinationInput.val(snap.val().destination);
+        firstTrainTimeInput.val(snap.val().firstTrainTimes);
+        frequencyInput.val(snap.val().frequency);
+    });
+
+
+
+
+    // Create state of inputform button, where if data-state is a recordID, then it's in edit mode When submit button pressed, 
+    submitButton.text('Update');
+    submitButton.attr('data-state', 'update');
+    submitButton.attr('data-idToEdit', recordID);
 
 });
 
 
 // Firebase update events
 // WHen a child is added to the Firebase database
-database.on('child_added', function (snap) {
+database.ref('/Train-Schedules').on('child_added', function (snap) {
     console.log(snap.val());
 
     if (snap.val() != null) {
@@ -158,11 +185,26 @@ database.on('child_added', function (snap) {
     console.log('error encountered: ' + error.code);
 })
 
+database.ref('/Train-Schedules').on('child_changed', function (snap) {
+    console.log(snap.val());
+    var recordID = snap.ref.key;
+
+    if (snap.val() != null) {
+        // Remove old table row
+        $('tr#'+recordID).remove();
+        console.log('Child changed ID: ' + recordID);
+        
+        renderRow(snap);
+    }
+
+}, function (error) {
+    console.log('error encountered: ' + error.code);
+})
+
 // When a child is removed from the database
-database.on('child_removed', function (snap) {
+database.ref('/Train-Schedules').on('child_removed', function (snap) {
     // Obtain the reference key of the deleted item
     var recordID = snap.ref.key;
-    console.log(recordID);
 
     // Use the recordID to select the element with JQuery
     $('#' + recordID).remove();
