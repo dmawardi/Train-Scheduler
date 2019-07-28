@@ -7,6 +7,7 @@ var destinationInput = $('#destinationInput');
 var firstTrainTimeInput = $('#firstTrainTimeInput');
 var frequencyInput = $('#frequencyInput');
 var submitButton = $('#submitButton');
+var submissionHeader = $('#submissionHeader')
 
 
 // Function to calculate/returns next arrival & mins away based on frequency and first train time 
@@ -119,8 +120,14 @@ $('#submitButton').on('click', function (event) {
             frequency: frequencyInput.val()
         });
         // The above will trigger the render row function for the new data
-        // Make submitButton text to Submit to change state
+        // Change button UI to account for change in state
         submitButton.text('Submit');
+        submissionHeader.text('Add Train');
+        submitButton.attr('data-state', 'submit');
+
+
+        // Change Bootstrap class for color attributes
+        submitButton.attr('class', 'btn btn-primary');
 
     }
 
@@ -148,10 +155,14 @@ $(document.body).on('click', '#editButton', function () {
     // Set HTML attributes to values
     var recordID = $(this).attr('data-edit');
     var ref = database.ref('/Train-Schedules');
+    var trainNameText;
 
 
     // Grab values from database using record ID
     ref.child('/' + recordID).once('value', function (snap) {
+
+        // Assign for usage outside scope
+        trainNameText = snap.val().trainNames;
 
         // Set form input to values of record
         trainNameInput.val(snap.val().trainNames);
@@ -160,10 +171,16 @@ $(document.body).on('click', '#editButton', function () {
         frequencyInput.val(snap.val().frequency);
     });
 
-    // Create state of inputform button, where if data-state is a recordID, then it's in edit mode When submit button pressed, 
+    // Create state of inputform button, where if data-state is a recordID, 
+    // then it's in edit mode When submit button pressed, 
     submitButton.text('Update');
     submitButton.attr('data-state', 'update');
     submitButton.attr('data-idToEdit', recordID);
+    submissionHeader.text('Edit ' + trainNameText + ' Train Details');
+
+    // Change Bootstrap class for color attributes
+    submitButton.attr('class', 'btn btn-success');
+
 
 });
 
@@ -189,7 +206,7 @@ database.ref('/Train-Schedules').on('child_changed', function (snap) {
     // If value found, 
     if (snap.val() != null) {
         // Remove old table row
-        $('tr#'+recordID).remove();
+        $('tr#' + recordID).remove();
         // Render the updated row
         renderRow(snap);
     }
