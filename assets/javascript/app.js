@@ -13,12 +13,7 @@ var firstTrainTimeInput = $('#firstTrainTimeInput');
 var frequencyInput = $('#frequencyInput');
 
 
-// TODO: Build function to calculate/returns next arrival & mins away based on frequency and first train time 
-// 16 - 00 = 16 (time difference in minutes)
-    // 16 % 3 = 1 (Modulus is the remainder) (time difference modular frequency)
-    // 3 - 1 = 2 minutes away (reduce frequency by result above)
-    // 2 + 3:16 = 3:18 (Add the minutes away to current time)
-
+// Function to calculate/returns next arrival & mins away based on frequency and first train time 
 function calcNextAndMinsAway(firstTrain, frequency) {
     // Convert times to moment objects. Note: subtracted 1 year from first train to ensure before current time
     var firstTrainTime = moment(firstTrain, "HH:mm");
@@ -54,13 +49,25 @@ function renderRow(snap) {
 
     // Create delete button and set in a <td> object
     var delButton = $('<button>');
-    delButton.addClass('btn btn-warning');
+    delButton.addClass('btn btn-danger');
     // Add key to delete key to match row (for deleting purposes later)
     delButton.attr('data-delete', snap.ref.key);
     delButton.attr('id', 'delButton');
     delButton.text('X');
+    
+
+    // Create update button and set in a <td> object
+    var editButton = $('<button>');
+    editButton.addClass('btn btn-info');
+    // Add key to delete key to match row (for deleting purposes later)
+    editButton.attr('data-edit', snap.ref.key);
+    editButton.attr('id', 'editButton');
+    editButton.text('Edit');
+
+    // Create td and append buttons
     var buttonTD = $('<td>');
     buttonTD.append(delButton);
+    buttonTD.append(editButton);
 
     // Calculations for calculated columns
     [nextArrival, minsAway]  =  calcNextAndMinsAway(snap.val().firstTrainTimes, snap.val().frequency)
@@ -68,7 +75,6 @@ function renderRow(snap) {
     // variable declaration using snapshot values
     var trainNameTD = "<td>" + snap.val().trainNames + "</td>";
     var destinationTD = "<td>" + snap.val().destination + "</td>";
-    var firstTrainTimeTD = "<td>" + snap.val().firstTrainTimes + "</td>";
     var frequencyTD = "<td>" + snap.val().frequency + "</td>";
     var nextArrivalTD = "<td>" + nextArrival + "</td>";
     var minsAwayTD = "<td>" + minsAway + "</td>";
@@ -122,6 +128,18 @@ $(document.body).on('click', '#delButton', function () {
 
     // Remove record with row's record ID
     database.child(recordID).remove();
+    // The above removal triggers the on "child removed" event
+
+});
+
+$(document.body).on('click', '#editButton', function () {
+    var recordID = $(this).attr('data-edit');
+    console.log("Record ID: " + recordID);
+
+    // Remove record with row's record ID
+    // database.child(recordID).set({
+
+    // });
     // The above removal triggers the on "child removed" event
 
 });
