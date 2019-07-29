@@ -10,6 +10,7 @@ var submitButton = $('#submitButton');
 var submissionHeader = $('#submissionHeader');
 // Table Data declaration
 var tableData = $('#tableData');
+var submissionCard = $('#submissionForm');
 
 
 
@@ -133,6 +134,7 @@ $('#submitButton').on('click', function (event) {
 
         // Change Bootstrap class for color attributes
         submitButton.attr('class', 'btn btn-primary');
+        submissionCard.attr('class', 'card');
 
     }
 
@@ -185,8 +187,7 @@ $(document.body).on('click', '#editButton', function () {
 
     // Change Bootstrap class for color attributes
     submitButton.attr('class', 'btn btn-success');
-
-
+    submissionCard.addClass('bg-secondary');
 });
 
 
