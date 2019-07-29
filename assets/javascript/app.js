@@ -7,7 +7,10 @@ var destinationInput = $('#destinationInput');
 var firstTrainTimeInput = $('#firstTrainTimeInput');
 var frequencyInput = $('#frequencyInput');
 var submitButton = $('#submitButton');
-var submissionHeader = $('#submissionHeader')
+var submissionHeader = $('#submissionHeader');
+// Table Data declaration
+var tableData = $('#tableData');
+
 
 
 // Function List
@@ -29,9 +32,8 @@ function calcNextAndMinsAway(firstTrain, frequency) {
 }
 
 // Takes object of JSON from snap then displays in table as row
-function renderRow(snap) {
+function renderRow(snap, snapKey) {
     // Declare variables
-    var table = $('#tableData');
     var row = $('<tr>');
 
     // Calculation variables
@@ -39,14 +41,14 @@ function renderRow(snap) {
     var minsAway;
 
     // Assign attribute of key to row to reference from delete button
-    row.attr('id', snap.ref.key);
+    row.attr('id', snapKey);
 
     // Button Creation
     // Create delete button and set in a <td> object
     var delButton = $('<button>');
     delButton.addClass('btn btn-danger');
     // Add key to delete key to match row (for deleting purposes later)
-    delButton.attr('data-delete', snap.ref.key);
+    delButton.attr('data-delete', snapKey);
     delButton.attr('id', 'delButton');
     delButton.text('X');
 
@@ -54,7 +56,7 @@ function renderRow(snap) {
     var editButton = $('<button>');
     editButton.addClass('btn btn-info');
     // Add key to delete key to match row (for deleting purposes later)
-    editButton.attr('data-edit', snap.ref.key);
+    editButton.attr('data-edit', snapKey);
     editButton.attr('id', 'editButton');
     editButton.text('Edit');
 
@@ -64,12 +66,12 @@ function renderRow(snap) {
     buttonTD.append(editButton);
 
     // Calculations for calculated columns
-    [nextArrival, minsAway] = calcNextAndMinsAway(snap.val().firstTrainTimes, snap.val().frequency)
+    [nextArrival, minsAway] = calcNextAndMinsAway(snap.firstTrainTimes, snap.frequency)
 
     // variable declaration using snapshot values
-    var trainNameTD = "<td>" + snap.val().trainNames + "</td>";
-    var destinationTD = "<td>" + snap.val().destination + "</td>";
-    var frequencyTD = "<td>" + snap.val().frequency + "</td>";
+    var trainNameTD = "<td>" + snap.trainNames + "</td>";
+    var destinationTD = "<td>" + snap.destination + "</td>";
+    var frequencyTD = "<td>" + snap.frequency + "</td>";
     var nextArrivalTD = "<td>" + nextArrival + "</td>";
     var minsAwayTD = "<td>" + minsAway + "</td>";
 
@@ -81,7 +83,7 @@ function renderRow(snap) {
     row.append(minsAwayTD);
     row.append(buttonTD);
     // Append row to table
-    table.append(row);
+    tableData.append(row);
 
 }
 
@@ -194,7 +196,7 @@ $(document.body).on('click', '#editButton', function () {
 database.ref('/Train-Schedules').on('child_added', function (snap) {
     // If value exists render row
     if (snap.val() != null) {
-        renderRow(snap);
+        renderRow(snap.val(), snap.ref.key);
     }
 
     // If error occurs
@@ -212,7 +214,7 @@ database.ref('/Train-Schedules').on('child_changed', function (snap) {
         // Remove old table row
         $('tr#' + recordID).remove();
         // Render the updated row
-        renderRow(snap);
+        renderRow(snap.val(), snap.ref.key);
     }
 
     // If error occurs
@@ -236,6 +238,16 @@ database.ref('/Train-Schedules').on('child_removed', function (snap) {
 
 // Arguments begin
 // 
-setTimeout(function(){
-    console.log('like a bull, we can not expect');
-}, 10000)
+// Every 60 seconds, Refresh the table
+setInterval(function(){
+    // Empty table data
+    tableData.empty();
+    // Check database and print snapshot
+    database.ref('/Train-Schedules').once('value', function (snap) {
+        // For keys found in the Schedule database
+        for (var key in snap.val()) {
+            // Render row using values and key
+            renderRow(snap.val()[key], key);
+        }
+    });
+}, 60000)
