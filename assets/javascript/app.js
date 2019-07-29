@@ -10,6 +10,7 @@ var submitButton = $('#submitButton');
 var submissionHeader = $('#submissionHeader')
 
 
+// Function List
 // Function to calculate/returns next arrival & mins away based on frequency and first train time 
 function calcNextAndMinsAway(firstTrain, frequency) {
     // Convert times to moment objects. Note: subtracted 1 year from first train to ensure before current time
@@ -84,6 +85,8 @@ function renderRow(snap) {
 
 }
 
+// Event Handlers
+// 
 // Event handler for click event of input submission form
 $('#submitButton').on('click', function (event) {
     // Prevent default submission behaviour
@@ -186,6 +189,7 @@ $(document.body).on('click', '#editButton', function () {
 
 
 // Firebase update events
+// 
 // WHen a child is added to the Firebase database
 database.ref('/Train-Schedules').on('child_added', function (snap) {
     // If value exists render row
@@ -229,3 +233,9 @@ database.ref('/Train-Schedules').on('child_removed', function (snap) {
     console.log('error encountered: ' + error.code);
 
 })
+
+// Arguments begin
+// 
+setTimeout(function(){
+    console.log('like a bull, we can not expect');
+}, 10000)
